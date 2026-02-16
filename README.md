@@ -119,9 +119,9 @@ const response = await fetch('https://api.apiverve.com/v1/translator', {
   "status": "ok",
   "error": null,
   "data": {
-    "translatedText": "Hola, como estas?",
-    "source": "en",
-    "target": "es"
+    "sourceLang": "en",
+    "targetLang": "es",
+    "translatedText": "¡Hola! ¿Cómo estás?"
   }
 }
 ```
