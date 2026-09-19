@@ -1,36 +1,31 @@
-# Translator App | APIVerve API Tutorial
+# Translator | APIVerve Template
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Build](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
-[![Vue](https://img.shields.io/badge/Vue-3-42b883)](https://vuejs.org)
-[![Vite](https://img.shields.io/badge/Vite-5-646cff)](https://vitejs.dev)
-[![APIVerve | Translator](https://img.shields.io/badge/APIVerve-Translator-purple)](https://apiverve.com/marketplace/translator?utm_source=github&utm_medium=tutorial&utm_campaign=translator-app-vue-tutorial)
+[![Vue](https://img.shields.io/badge/Vue-3-4FC08D)](package.json)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF)](package.json)
+[![APIVerve | Translator](https://img.shields.io/badge/APIVerve-Translator-purple)](https://apiverve.com/marketplace/translator?utm_source=github&utm_medium=template&utm_campaign=translator-app-vue-tutorial)
 
-A clean, responsive language translator app built with Vue 3. Translate text between 100+ languages with auto-detection support.
+Translate text between 18 languages, swap the direction in one click, and copy the result.
 
-![Screenshot](https://raw.githubusercontent.com/apiverve/translator-app-vue-tutorial/main/screenshot.jpg)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fapiverve%2Ftranslator-app-vue-tutorial&project-name=translator&repository-name=translator&env=APIVERVE_API_KEY&envDescription=Your%20APIVerve%20API%20key.%20Free%20to%20create%2C%20no%20card%20needed.&envLink=https%3A%2F%2Fdashboard.apiverve.com%2Fsignup%3Fapi%3Dtranslator%26utm_source%3Dvercel%26utm_medium%3Dtemplate%26utm_campaign%3Dtranslator-app-vue-tutorial)
 
----
-
-### Get Your Free API Key
-
-This tutorial requires an APIVerve API key. **[Sign up free](https://dashboard.apiverve.com?utm_source=github&utm_medium=tutorial&utm_campaign=translator-app-vue-tutorial)** - no credit card required.
+![Translator turning an English shipping update into Spanish](https://raw.githubusercontent.com/apiverve/translator-app-vue-tutorial/main/screenshot.png)
 
 ---
 
-## Features
+### Get your free API key
 
-- Translate text between 100+ languages
-- Auto-detect source language
-- Swap languages with one click
-- Copy translation to clipboard
-- Character count display
-- Clean, modern UI with responsive design
-- Built with Vue 3 and Vite for fast development
+This template needs an APIVerve API key. **[Sign up free](https://dashboard.apiverve.com/signup?api=translator&utm_source=github&utm_medium=template&utm_campaign=translator-app-vue-tutorial)**, no credit card required.
 
-## Quick Start
+---
 
-1. **Clone this repository**
+## Deploy in one click
+
+Click **Deploy with Vercel** above. Vercel copies this repo to your GitHub account, asks for your `APIVERVE_API_KEY`, and gives you a live URL about a minute later.
+
+## Run it locally
+
+1. **Clone the repository**
    ```bash
    git clone https://github.com/apiverve/translator-app-vue-tutorial.git
    cd translator-app-vue-tutorial
@@ -42,134 +37,75 @@ This tutorial requires an APIVerve API key. **[Sign up free](https://dashboard.a
    ```
 
 3. **Add your API key**
-
-   Open `.env` and add your API key:
+   ```bash
+   cp .env.example .env
    ```
-   VITE_API_KEY=your-api-key-here
-   ```
+   Then open `.env` and set `APIVERVE_API_KEY`.
 
-4. **Start the development server**
+4. **Start it**
    ```bash
    npm run dev
    ```
 
-5. **Open in browser**
+5. **Open** `http://localhost:5173`
 
-   Visit http://localhost:5173 and start translating!
+`npm run dev` serves the page and runs the `api/` functions together, the same way Vercel does, so you don't need the Vercel CLI.
 
-## Project Structure
+## How it works
+
+1. The page (`src/App.vue`) calls `POST /api/translate`.
+2. `api/translate.js` checks the input, then calls Translator. Your API key stays on the server and never reaches the browser.
+3. The page shows the result.
+
+The function only accepts the language codes the page offers. To add a language, add its code to `LANGUAGES` in `api/translate.js` and to the list in `src/App.vue`.
 
 ```
-translator-app-vue-tutorial/
-├── src/
-│   ├── App.vue         # Main Vue component
-│   ├── style.css       # Styles
-│   └── main.js         # Entry point
-├── index.html          # HTML template
-├── package.json        # Dependencies
-├── vite.config.js      # Vite configuration
-├── .env                # Environment variables (add your API key)
-├── screenshot.jpg      # Preview image
-├── LICENSE             # MIT license
-├── .gitignore          # Git ignore rules
-└── README.md           # This file
+├── api/translate.js     # Vercel function: checks input, calls APIVerve with your key
+├── lib/apiverve.js      # Shared by api/: key check, rate limit, the APIVerve call
+├── lib/dev-api.js       # Runs api/ locally under `npm run dev` (Vercel ignores it)
+├── src/App.vue          # The page (Vue)
+├── vite.config.js
+├── .env.example         # Copy to .env and add your key
+└── package.json
 ```
 
-## How It Works
-
-1. User selects source and target languages
-2. User enters text to translate
-3. Vue captures the input and calls the Translator API
-4. API returns the translated text
-5. Component displays the translation with copy option
-
-### The API Call
+### The API call
 
 ```javascript
-const response = await fetch('https://api.apiverve.com/v1/translator', {
+const res = await fetch('https://api.apiverve.com/v1/translator', {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'x-api-key': API_KEY
-  },
-  body: JSON.stringify({
-    text: sourceText,
-    source: 'en',
-    target: 'es'
-  })
+  headers: { 'x-api-key': process.env.APIVERVE_API_KEY, 'Content-Type': 'application/json' },
+  body: JSON.stringify({ text, source: 'en', target: 'es' })
 });
+const { data } = await res.json();
+// data.translatedText
 ```
 
-## API Reference
+## Before you share your URL
 
-**Endpoint:** `POST https://api.apiverve.com/v1/translator`
+Once deployed, anyone who finds your URL can use it on your API key. Each visitor can make 10 requests a minute, which is fine for a demo. The limit is kept in memory, so it isn't shared between serverless instances. For production:
 
-**Request Body:**
+- Put the page behind your own sign-in, or
+- Move the limit to a shared store such as [Upstash Redis](https://upstash.com/), or
+- Call the route only from your own backend.
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `text` | string | Yes | Text to translate |
-| `target` | string | Yes | Target language code (e.g., "es") |
-| `source` | string | No | Source language code (auto-detected if omitted) |
+## Ideas to extend it
 
-**Example Response:**
+- Detect the source language with [Language Detector](https://apiverve.com/marketplace/languagedetector?utm_source=github&utm_medium=template&utm_campaign=translator-app-vue-tutorial) instead of asking for it
+- Translate customer messages into your support team's language as they arrive
+- Keep a glossary of product names that should never be translated
 
-```json
-{
-  "status": "ok",
-  "error": null,
-  "data": {
-    "sourceLang": "en",
-    "targetLang": "es",
-    "translatedText": "¡Hola! ¿Cómo estás?"
-  }
-}
-```
+## API reference
 
-## Supported Languages
+- [Translator](https://apiverve.com/marketplace/translator?utm_source=github&utm_medium=template&utm_campaign=translator-app-vue-tutorial): `POST https://api.apiverve.com/v1/translator`
+- [Full documentation](https://docs.apiverve.com?utm_source=github&utm_medium=template&utm_campaign=translator-app-vue-tutorial)
 
-The API supports 100+ languages including:
+## Tech stack
 
-| Code | Language | Code | Language |
-|------|----------|------|----------|
-| en | English | es | Spanish |
-| fr | French | de | German |
-| it | Italian | pt | Portuguese |
-| ru | Russian | ja | Japanese |
-| ko | Korean | zh | Chinese |
-| ar | Arabic | hi | Hindi |
-
-## Customization Ideas
-
-- Add speech-to-text input
-- Add text-to-speech for translations
-- Save translation history to localStorage
-- Add favorite/frequent language pairs
-- Implement real-time translation as you type
-- Add dark mode toggle
-
-## Related APIs
-
-Explore more APIs at [APIVerve](https://apiverve.com/marketplace?utm_source=github&utm_medium=tutorial&utm_campaign=translator-app-vue-tutorial):
-
-- [Language Detector](https://apiverve.com/marketplace/languagedetector?utm_source=github&utm_medium=tutorial&utm_campaign=translator-app-vue-tutorial) - Detect the language of text
-- [Text Summarizer](https://apiverve.com/marketplace/textsummarizer?utm_source=github&utm_medium=tutorial&utm_campaign=translator-app-vue-tutorial) - Summarize long text
-- [Sentiment Analysis](https://apiverve.com/marketplace/sentimentanalysis?utm_source=github&utm_medium=tutorial&utm_campaign=translator-app-vue-tutorial) - Analyze text sentiment
-
-## Free Plan Note
-
-This tutorial works with the free APIVerve plan. Some APIs may have:
-- **Locked fields**: Premium response fields return `null` on free plans
-- **Ignored parameters**: Some optional parameters require a paid plan
-
-The API response includes a `premium` object when limitations apply. [Upgrade anytime](https://dashboard.apiverve.com/plans) to unlock all features.
+- **Vue 3** and **Vite 5** for the page
+- **Vercel Functions** in `api/` for the server side (Node.js 20+)
+- Deploys to Vercel as-is: Vite builds the page, and each file in `api/` becomes a function
 
 ## License
 
-MIT - see [LICENSE](LICENSE)
-
-## Links
-
-- [Get API Key](https://dashboard.apiverve.com?utm_source=github&utm_medium=tutorial&utm_campaign=translator-app-vue-tutorial) - Sign up free
-- [APIVerve Marketplace](https://apiverve.com/marketplace?utm_source=github&utm_medium=tutorial&utm_campaign=translator-app-vue-tutorial) - Browse 300+ APIs
-- [Translator API](https://apiverve.com/marketplace/translator?utm_source=github&utm_medium=tutorial&utm_campaign=translator-app-vue-tutorial) - API details
+MIT. See [LICENSE](LICENSE).

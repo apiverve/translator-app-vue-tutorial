@@ -1,18 +1,12 @@
 <script setup>
 /**
- * Translator App - Tutorial Example
+ * Translator, an APIVerve template.
  *
- * A simple Vue app using the APIVerve Translator API.
- * https://apiverve.com/marketplace/translator
+ * Translate text between 18 languages. The page calls /api/translate (api/translate.js),
+ * which holds your API key and calls the Translator API: https://apiverve.com/marketplace/translator
  */
 
 import { ref } from 'vue'
-
-// API Configuration
-// Create a .env file with: VITE_API_KEY=your-api-key-here
-// Get a free key at: https://dashboard.apiverve.com
-const API_KEY = import.meta.env.VITE_API_KEY
-const API_URL = 'https://api.apiverve.com/v1/translator'
 
 // Common languages
 const languages = [
@@ -49,11 +43,6 @@ const translate = async () => {
     return
   }
 
-  if (!API_KEY) {
-    error.value = 'Add your API key to .env file (VITE_API_KEY=your-key)'
-    return
-  }
-
   if (sourceLang.value === targetLang.value) {
     error.value = 'Source and target languages must be different'
     return
@@ -64,12 +53,9 @@ const translate = async () => {
   translatedText.value = ''
 
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch('/api/translate', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         text: sourceText.value,
         source: sourceLang.value,
@@ -79,14 +65,13 @@ const translate = async () => {
 
     const data = await response.json()
 
-    if (data.status === 'ok') {
-      translatedText.value = data.data.translatedText
+    if (response.ok) {
+      translatedText.value = data.translatedText
     } else {
       error.value = data.error || 'Translation failed'
     }
   } catch (err) {
-    error.value = 'Failed to translate. Check your API key.'
-    console.error('API Error:', err)
+    error.value = 'Couldn’t reach the server. Try again.'
   } finally {
     loading.value = false
   }
@@ -116,7 +101,7 @@ const copyTranslation = () => {
   <div class="app">
     <div class="container">
       <h1>Translator App</h1>
-      <p class="subtitle">Translate text between 100+ languages</p>
+      <p class="subtitle">Translate text between 18 languages</p>
 
       <div class="language-selector">
         <select v-model="sourceLang">
@@ -143,6 +128,7 @@ const copyTranslation = () => {
             v-model="sourceText"
             placeholder="Enter text to translate..."
             rows="6"
+            maxlength="2000"
           ></textarea>
           <span class="char-count">{{ sourceText.length }} characters</span>
         </div>
@@ -175,6 +161,11 @@ const copyTranslation = () => {
       </button>
 
       <div v-if="error" class="error">{{ error }}</div>
+
+      <footer class="footer">
+        Powered by
+        <a href="https://apiverve.com/marketplace/translator?utm_source=github&amp;utm_medium=template&amp;utm_campaign=translator-app-vue-tutorial" target="_blank" rel="noopener noreferrer">APIVerve Translator API</a>
+      </footer>
     </div>
   </div>
 </template>

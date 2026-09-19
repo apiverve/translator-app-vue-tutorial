@@ -1,12 +1,14 @@
 {
   "name": "translator-app-vue-tutorial",
+  "version": "2.0.0",
   "private": true,
-  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "vue": "^3.4.21"
